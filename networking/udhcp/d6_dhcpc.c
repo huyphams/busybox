@@ -1404,25 +1404,19 @@ int udhcpc6_main(int argc UNUSED_PARAM, char **argv)
  leasefail:
 				change_listen_mode(LISTEN_NONE);
 				d6_run_script_no_option("leasefail");
-#if BB_MMU /* -b is not supported on NOMMU */
-				if (opt & OPT_b) { /* background if no lease */
-					bb_simple_info_msg("no lease, forking to background");
-					client_background();
-					/* do not background again! */
-					opt = ((opt & ~(OPT_b|OPT_n)) | OPT_f);
-					/* ^^^ also disables -n (-b takes priority over -n):
-					 * ifup's default udhcpc options are -R -n,
-					 * and users want to be able to add -b
-					 * (in a config file) to make it background
-					 * _and not exit_.
-					 */
-				} else
-#endif
 				if (opt & OPT_n) { /* abort if no lease */
 					bb_simple_info_msg("no lease, failing");
 					retval = 1;
 					goto ret;
 				}
+#if BB_MMU /* -b is not supported on NOMMU */
+				if (opt & OPT_b) { /* background if no lease */
+					bb_simple_info_msg("no lease, forking to background");
+					client_background();
+					/* do not background again! */
+					opt = ((opt & ~OPT_b) | OPT_f);
+				}
+#endif
 				/* Wait before trying again */
 				timeout = tryagain_timeout;
 				packet_num = 0;
