@@ -1234,9 +1234,11 @@ static uint32_t next_token(uint32_t expected)
 					s[-1] = bb_process_escape_sequence((const char **)&pp);
 					if (*p == '\\')
 						*s++ = '\\';
-					if (pp == p)
+					if (pp == p) {
+						if (*p == '\0')
+							syntax_error(EMSG_UNEXP_EOS);
 						*s++ = *p++;
-					else
+					} else
 						p = pp;
 				}
 			}
