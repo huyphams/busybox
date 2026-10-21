@@ -2283,6 +2283,7 @@ int mount_main(int argc UNUSED_PARAM, char **argv)
 	unsigned long cmdopt_flags;
 	unsigned opt;
 	struct mntent mtpair[2], *mtcur = mtpair;
+	char buf[GETMNTENT_BUFSIZE * 2];
 	IF_NOT_DESKTOP(const int nonroot = 0;)
 
 	IF_DESKTOP(int nonroot = ) sanitize_env_if_suid();
@@ -2395,9 +2396,9 @@ int mount_main(int argc UNUSED_PARAM, char **argv)
 		struct mntent *mtother = (mtcur==mtpair ? mtpair+1 : mtpair);
 
 		// Get next fstab entry
-		if (!getmntent_r(fstab, mtcur, getmntent_buf
-					+ (mtcur==mtpair ? GETMNTENT_BUFSIZE/2 : 0),
-				GETMNTENT_BUFSIZE/2)
+		if (!getmntent_r(fstab, mtcur, buf
+					+ (mtcur==mtpair ? GETMNTENT_BUFSIZE : 0),
+				GETMNTENT_BUFSIZE)
 		) { // End of fstab/mtab is reached
 			mtcur = mtother; // the thing we found last time
 			break;
