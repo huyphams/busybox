@@ -316,7 +316,11 @@ static int FAST_FUNC dir_act(struct recursive_state *state,
 
 	/* go through all files in /proc/PID/fd and check whether they are sockets */
 	strcpy(proc_pid_fname + len - (sizeof("cmdline")-1), "fd");
-	pid_slash_progname = concat_path_file(pid, bb_basename(cmdline_buf)); /* "PID/argv0" */
+
+	/* Sanitize the program name to prevent ANSI escape sequences (CVE-2024-58251) */
+	/* printable_string() returns a string with non-printable chars replaced by '?' */
+	const char *sanitized_name = printable_string(bb_basename(cmdline_buf));
+	pid_slash_progname = concat_path_file(pid, sanitized_name); /* "PID/argv0" */
 	n = recursive_action(proc_pid_fname,
 			ACTION_RECURSE | ACTION_QUIET,
 			add_to_prg_cache_if_socket,
