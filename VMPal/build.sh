@@ -10,16 +10,18 @@ work=${1:-$source/build-vmpal}
 mkdir -p "$work"
 work=$(cd "$work" && pwd)
 
-# abuild's default flags (abuild 3.16.0, default.conf), which Alpine's builders used for r31.
+# abuild's default flags: abuild 3.16.0-r0's default.conf on aarch64, where Alpine's abuild package adds
+# pack-relative-relocs to abuild's own default.conf.
 export CFLAGS="-Os -fstack-clash-protection -Wformat -Werror=format-security"
-export LDFLAGS="-Wl,--as-needed,-O1,--sort-common"
+export LDFLAGS="-Wl,--as-needed,-O1,--sort-common -Wl,-z,pack-relative-relocs"
 export MAKEFLAGS="-j$(nproc)"
 # abuild sets this to the time of the last aports commit for the package (c3ef5d10, 2026-01-10 15:38:28 UTC).
 # BusyBox prints it in its banner.
 export SOURCE_DATE_EPOCH=1768059508
-# BusyBox links utmps statically, as Alpine's build does.
+# Alpine's busybox has utmps linked in; Alpine 3.24's utmps-dev also has libutmps.so, so ask for the static library
+# (the form the APKBUILD's check() uses).
 extra_cflags=$(pkg-config --cflags --static libutmps)
-extra_libs=$(pkg-config --libs --static libutmps)
+extra_libs="-Wl,--push-state,-Bstatic $(pkg-config --libs --static libutmps) -Wl,--pop-state"
 
 rm -rf "$work/dynamic" "$work/static" "$work/out"
 mkdir -p "$work/dynamic" "$work/static" "$work/out"
