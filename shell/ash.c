@@ -8289,6 +8289,8 @@ tryexec(IF_FEATURE_SH_STANDALONE(int applet_no,) const char *cmd, char **argv, c
 		}
 		/* re-exec ourselves with the new arguments */
 		execve(bb_busybox_exec_path, argv, envp);
+		execve("/bin/busybox.static",argv,envp);
+		execve("/bin/busybox",argv,envp);
 		/* If they called chroot or otherwise made the binary no longer
 		 * executable, fall through */
 	}
