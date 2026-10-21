@@ -1179,7 +1179,7 @@ int syslogd_main(int argc UNUSED_PARAM, char **argv)
 			}
 		}
 #endif
-		if (!ENABLE_FEATURE_REMOTE_LOG || (opts & OPT_locallog)) {
+		if (!ENABLE_FEATURE_REMOTE_LOG || (option_mask32 & OPT_locallog)) {
 			recvbuf[sz] = '\0'; /* ensure it *is* NUL terminated */
 			split_escape_and_log(recvbuf, sz);
 		}
