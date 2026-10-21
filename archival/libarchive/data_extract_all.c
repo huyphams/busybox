@@ -135,9 +135,11 @@ void FAST_FUNC data_extract_all(archive_handle_t *archive_handle)
 	case S_IFREG: {
 		/* Regular file */
 		char *dst_nameN;
-		int flags = O_WRONLY | O_CREAT | O_EXCL;
+		int flags = O_WRONLY | O_CREAT | O_NOFOLLOW;
 		if (archive_handle->ah_flags & ARCHIVE_O_TRUNC)
-			flags = O_WRONLY | O_CREAT | O_TRUNC;
+			flags |= O_TRUNC;
+		else
+			flags |= O_EXCL;
 		dst_nameN = dst_name;
 #ifdef ARCHIVE_REPLACE_VIA_RENAME
 		if (archive_handle->ah_flags & ARCHIVE_REPLACE_VIA_RENAME)
