@@ -608,6 +608,7 @@ testing 'awk references to empty fields' \
 b
 ' '' 'a\nb\n'
 
+test x"$SKIP_KNOWN_BUGS" = x"" && {
 # The "b" in "abc" should not match <b* pattern.
 # Currently we use REG_STARTEND ("This flag is a BSD extension, not present in POSIX")
 # to implement the code to handle this correctly, but if your libc has no REG_STARTEND,
@@ -616,5 +617,6 @@ testing 'awk gsub erroneous word start match' \
 	"awk 'BEGIN { a=\"abc\"; gsub(/\<b*/,\"\",a); print a }'" \
 	'abc\n' \
 	'' ''
+}
 
 exit $FAILCOUNT
