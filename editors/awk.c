@@ -2638,8 +2638,13 @@ static int awk_sub(node *rn, const char *repl, int nm, var *src, var *dest /*,in
 					resbuf = qrealloc(resbuf, residx + replen + n, &resbufsize);
 					memcpy(resbuf + residx, sp + pmatch[j].rm_so - start_ofs, n);
 					residx += n;
-				} else
+				} else {
+/* '\\' and '&' following a backslash keep its original meaning, any other
+ * occurrence of a '\\' should be treated as literal */
+					if (bslash && c != '\\' && c != '&')
+						resbuf[residx++] = '\\';
 					resbuf[residx++] = c;
+				}
 				bslash = 0;
 			}
 		}
