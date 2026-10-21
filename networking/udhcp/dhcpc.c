@@ -1163,7 +1163,7 @@ static void client_background(void)
 //usage:     "\n	-p FILE		Create pidfile"
 //usage:     "\n	-B		Request broadcast replies"
 //usage:     "\n	-t N		Send up to N discover packets (default 3)"
-//usage:     "\n	-T SEC		Pause between packets (default 3)"
+//usage:     "\n	-T SEC		Pause between packets (default 5)"
 //usage:     "\n	-A SEC		Wait if lease is not obtained (default 20)"
 //usage:	USE_FOR_MMU(
 //usage:     "\n	-b		Background if lease is not obtained"
@@ -1207,7 +1207,7 @@ int udhcpc_main(int argc UNUSED_PARAM, char **argv)
 	llist_t *list_x = NULL;
 	int tryagain_timeout = 20;
 	int discover_timeout = 3;
-	int discover_retries = 3;
+	int discover_retries = 5;
 	uint32_t server_id = server_id; /* for compiler */
 	uint32_t requested_ip = 0;
 	int packet_num;
