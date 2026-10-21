@@ -159,7 +159,7 @@ int last_main(int argc, char **argv) MAIN_EXTERNALLY_VISIBLE;
 int last_main(int argc UNUSED_PARAM, char **argv)
 {
 	struct utmpx ut;
-	const char *filename = _PATH_WTMP;
+	const char *filename = _CORRECT_PATH_WTMP;
 	llist_t *zlist;
 	off_t pos;
 	time_t start_time;

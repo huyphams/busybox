@@ -42,8 +42,8 @@ const int const_int_0 = 0;
 #if ENABLE_FEATURE_WTMP
 /* This is usually something like "/var/adm/wtmp" or "/var/log/wtmp" */
 const char bb_path_wtmp_file[] ALIGN1 =
-# if defined _PATH_WTMP
-	_PATH_WTMP;
+# if defined _CORRECT_PATH_WTMP
+	_CORRECT_PATH_WTMP;
 # elif defined WTMP_FILE
 	WTMP_FILE;
 # else

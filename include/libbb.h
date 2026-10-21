@@ -107,13 +107,11 @@
 #  define _PATH_UTMPX _PATH_UTMP
 # else
 #  if !defined(__FreeBSD__)
-#   include <utmp.h>
+#   include <utmpx.h>
+#   define _CORRECT_PATH_UTMPX "/run/utmps/utmp"
+#   define _CORRECT_PATH_WTMP "/var/log/wtmp"
 #  else
 #   define _PATH_UTMPX "/var/run/utx.active"
-#  endif
-#  include <utmpx.h>
-#  if defined _PATH_UTMP && !defined _PATH_UTMPX
-#   define _PATH_UTMPX _PATH_UTMP
 #  endif
 # endif
 #endif

@@ -8,11 +8,13 @@
  */
 #include "libbb.h"
 
+#if 0
 static void touch(const char *filename)
 {
 	if (access(filename, R_OK | W_OK) == -1)
 		close(open(filename, O_WRONLY | O_CREAT, 0664));
 }
+#endif
 
 void FAST_FUNC write_new_utmp(pid_t pid, int new_type, const char *tty_name, const char *username, const char *hostname)
 {
@@ -45,8 +47,8 @@ void FAST_FUNC write_new_utmp(pid_t pid, int new_type, const char *tty_name, con
 		tty_name += 3;
 	strncpy(id, tty_name, width);
 
-	touch(_PATH_UTMPX);
-	//utmpxname(_PATH_UTMPX);
+	//touch(_CORRECT_PATH_UTMPX);
+	//utmpxname(_CORRECT_PATH_UTMPX);
 	setutxent();
 	/* Append new one (hopefully, unless we collide on ut_id) */
 	pututxline(&utent);
@@ -67,8 +69,8 @@ void FAST_FUNC update_utmp(pid_t pid, int new_type, const char *tty_name, const 
 	struct utmpx utent;
 	struct utmpx *utp;
 
-	touch(_PATH_UTMPX);
-	//utmpxname(_PATH_UTMPX);
+	//touch(_CORRECT_PATH_UTMPX);
+	//utmpxname(_CORRECT_PATH_UTMPX);
 	setutxent();
 
 	/* Did init/getty/telnetd/sshd/... create an entry for us?
