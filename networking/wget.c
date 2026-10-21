@@ -57,7 +57,6 @@
 //config:	bool "Support HTTPS using internal TLS code"
 //config:	default y
 //config:	depends on WGET
-//config:	select TLS
 //config:	help
 //config:	wget will use internal TLS code to connect to https:// URLs.
 //config:	It also enables FTPS support, but it's not well tested yet.
@@ -776,10 +775,8 @@ static void spawn_ssl_client(const char *host, int network_fd, int flags)
 	int pid;
 	char *servername, *p;
 
-	if (!(option_mask32 & WGET_OPT_NO_CHECK_CERT)) {
-		option_mask32 |= WGET_OPT_NO_CHECK_CERT;
-		bb_simple_error_msg("note: TLS certificate validation not implemented");
-	}
+	if (ENABLE_SSL_CLIENT && !(option_mask32 & WGET_OPT_NO_CHECK_CERT))
+		bb_simple_error_msg_and_die("note: TLS certificate validation not implemented");
 
 	servername = xstrdup(host);
 	p = strrchr(servername, ':');
@@ -796,14 +793,14 @@ static void spawn_ssl_client(const char *host, int network_fd, int flags)
 		close(sp[0]);
 		xmove_fd(sp[1], 0);
 		xdup2(0, 1);
-		if (BB_MMU) {
+		if (BB_MMU && ENABLE_TLS && (option_mask32 & WGET_OPT_NO_CHECK_CERT)) {
 			tls_state_t *tls = new_tls_state();
 			tls->ifd = tls->ofd = network_fd;
 			tls_handshake(tls, servername);
 			tls_run_copy_loop(tls, flags);
 			exit(0);
 		} else {
-			char *argv[6];
+			char *argv[7], **a;
 
 			xmove_fd(network_fd, 3);
 			argv[0] = (char*)"ssl_client";
@@ -811,8 +808,14 @@ static void spawn_ssl_client(const char *host, int network_fd, int flags)
 			//TODO: if (!is_ip_address(servername))...
 			argv[2] = (char*)"-n";
 			argv[3] = servername;
-			argv[4] = (flags & TLSLOOP_EXIT_ON_LOCAL_EOF ? (char*)"-e" : NULL);
-			argv[5] = NULL;
+
+			a = &argv[4];
+			if (flags & TLSLOOP_EXIT_ON_LOCAL_EOF)
+				*a++ = (char*)"-e";
+			if (!ENABLE_SSL_CLIENT && (option_mask32 & WGET_OPT_NO_CHECK_CERT))
+				*a++= (char*)"-I";
+			*a = NULL;
+
 			BB_EXECVP(argv[0], argv);
 			bb_perror_msg_and_die("can't execute '%s'", argv[0]);
 		}
