@@ -170,6 +170,14 @@
 //config:	you to run the specified command or builtin,
 //config:	even when there is a function with the same name.
 //config:
+//config:config ASH_VERSION_VAR
+//config:	bool "declare $BB_ASH_VERSION variable"
+//config:	default y
+//config:	depends on SHELL_ASH
+//config:	help
+//config:	Enable support for declaring the $BB_ASH_VERSION variable,
+//config:	which is set as the busybox version.
+//config:
 //config:endif # ash options
 
 //applet:IF_ASH(APPLET(ash, BB_DIR_BIN, BB_SUID_DROP))
@@ -2160,6 +2168,9 @@ static const struct {
 	{ VSTRFIXED|VTEXTFIXED       , "PS1=$ "    , NULL            },
 	{ VSTRFIXED|VTEXTFIXED       , "PS2=> "    , NULL            },
 	{ VSTRFIXED|VTEXTFIXED       , "PS4=+ "    , NULL            },
+#if ENABLE_ASH_VERSION_VAR
+	{ VSTRFIXED|VTEXTFIXED       , "BB_ASH_VERSION=" BB_VER, NULL },
+#endif
 #if ENABLE_ASH_GETOPTS
 	{ VSTRFIXED|VTEXTFIXED       , defoptindvar, getoptsreset    },
 #endif
@@ -2219,19 +2230,20 @@ extern struct globals_var *BB_GLOBAL_CONST ash_ptr_to_globals_var;
 #define vps1      varinit[VAR_OFFSET1 + 2]
 #define vps2      varinit[VAR_OFFSET1 + 3]
 #define vps4      varinit[VAR_OFFSET1 + 4]
+#define VAR_OFFSET2 (VAR_OFFSET1 + ENABLE_ASH_VERSION_VAR)
 #if ENABLE_ASH_GETOPTS
-# define voptind  varinit[VAR_OFFSET1 + 5]
+# define voptind  varinit[VAR_OFFSET2 + 5]
 #endif
-#define VAR_OFFSET2 (VAR_OFFSET1 + ENABLE_ASH_GETOPTS)
-#define vlineno   varinit[VAR_OFFSET2 + 5]
-#define vfuncname varinit[VAR_OFFSET2 + 6]
+#define VAR_OFFSET3 (VAR_OFFSET2 + ENABLE_ASH_GETOPTS)
+#define vlineno   varinit[VAR_OFFSET3 + 5]
+#define vfuncname varinit[VAR_OFFSET3 + 6]
 #if ENABLE_ASH_RANDOM_SUPPORT
-# define vrandom  varinit[VAR_OFFSET2 + 7]
+# define vrandom  varinit[VAR_OFFSET3 + 7]
 #endif
-#define VAR_OFFSET3 (VAR_OFFSET2 + ENABLE_ASH_RANDOM_SUPPORT)
+#define VAR_OFFSET4 (VAR_OFFSET2 + ENABLE_ASH_RANDOM_SUPPORT)
 #if BASH_EPOCH_VARS
-# define vepochs  varinit[VAR_OFFSET3 + 7]
-# define vepochr  varinit[VAR_OFFSET3 + 8]
+# define vepochs  varinit[VAR_OFFSET4 + 7]
+# define vepochr  varinit[VAR_OFFSET4 + 8]
 #endif
 #define INIT_G_var() do { \
 	unsigned i; \
