@@ -2524,6 +2524,14 @@ static ALWAYS_INLINE unsigned char bb_ascii_tolower(unsigned char a)
 #define isgraph_asciionly(a) ((unsigned)((a) - 0x21) <= 0x7e - 0x21)
 #define isprint_asciionly(a) ((unsigned)((a) - 0x20) <= 0x7e - 0x20)
 
+/* Print msg to a file-descriptor, replacing any unprintable and terminal escape bytes with '?' if fd is a TTY */
+static ALWAYS_INLINE void bb_safe_dump_str(FILE* fd, const char* msg) {
+	int fdno = fileno(fd);
+	if (isatty(fdno)) {
+		msg = printable_string(msg);
+	}
+	fprintf(fd, "%s", msg);
+}
 
 /* Simple unit-testing framework */
 

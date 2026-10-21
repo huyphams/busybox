@@ -29,7 +29,7 @@ void FAST_FUNC header_verbose_list(const file_header_t *file_header)
 		/*sprintf(gid, "%u", (unsigned)file_header->gid);*/
 		group = utoa(file_header->gid);
 	}
-	printf("%s %s/%s %9"OFF_FMT"u %4u-%02u-%02u %02u:%02u:%02u %s",
+	printf("%s %s/%s %9"OFF_FMT"u %4u-%02u-%02u %02u:%02u:%02u ",
 		bb_mode_string(modestr, file_header->mode),
 		user,
 		group,
@@ -39,14 +39,13 @@ void FAST_FUNC header_verbose_list(const file_header_t *file_header)
 		ptm->tm_mday,
 		ptm->tm_hour,
 		ptm->tm_min,
-		ptm->tm_sec,
-		file_header->name);
+		ptm->tm_sec);
 
 #else /* !FEATURE_TAR_UNAME_GNAME */
 
 	localtime_r(&file_header->mtime, ptm);
 
-	printf("%s %u/%u %9"OFF_FMT"u %4u-%02u-%02u %02u:%02u:%02u %s",
+	printf("%s %u/%u %9"OFF_FMT"u %4u-%02u-%02u %02u:%02u:%02u ",
 		bb_mode_string(modestr, file_header->mode),
 		(unsigned)file_header->uid,
 		(unsigned)file_header->gid,
@@ -56,14 +55,15 @@ void FAST_FUNC header_verbose_list(const file_header_t *file_header)
 		ptm->tm_mday,
 		ptm->tm_hour,
 		ptm->tm_min,
-		ptm->tm_sec,
-		file_header->name);
+		ptm->tm_sec);
 
 #endif /* FEATURE_TAR_UNAME_GNAME */
 
+	bb_safe_dump_str(stdout, file_header->name);
 	/* NB: GNU tar shows "->" for symlinks and "link to" for hardlinks */
 	if (file_header->link_target) {
-		printf(" -> %s", file_header->link_target);
+		printf(" -> ");
+		bb_safe_dump_str(stdout, file_header->link_target);
 	}
 	bb_putchar('\n');
 }
