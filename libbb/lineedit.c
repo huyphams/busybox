@@ -451,7 +451,7 @@ static void put_cur_glyph_and_inc_cursor(void)
 		 * have automargin (IOW: it is moving cursor to next line
 		 * by itself (which is wrong for VT-10x terminals)),
 		 * this will break things: there will be one extra empty line */
-		puts("\r"); /* + implicit '\n' */
+		fprintf(stderr, "\r\n");
 #else
 		/* VT-10x terminals don't wrap cursor to next line when last char
 		 * on the line is printed - cursor stays "over" this char.
@@ -1170,9 +1170,9 @@ static void showfiles(void)
 			);
 		}
 		if (ENABLE_UNICODE_SUPPORT)
-			puts(printable_string(matches[n]));
+			fprintf(stderr, "%s\n", printable_string(matches[n]));
 		else
-			puts(matches[n]);
+			fprintf(stderr, "%s\n", matches[n]);
 	}
 }
 
